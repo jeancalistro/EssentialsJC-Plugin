@@ -1,0 +1,11 @@
+name: Essentials
+version: '${project.version}'
+main: com.jeancalistro.essentials.Essential
+api-version: '1.20'
+commands:
+  fix:
+    usage: /fix
+  ping:
+    usage: /ping
+  setwarp:
+    usage: /setwarp <warp name>
