@@ -1,6 +1,6 @@
-name: Essentials
+name: EssentialsJC
 version: '${project.version}'
-main: com.jeancalistro.essentials.Essential
+main: com.jeancalistro.essentials.EssentialJC
 api-version: '1.20'
 commands:
   fix:
@@ -9,3 +9,5 @@ commands:
     usage: /ping
   setwarp:
     usage: /setwarp <warp name>
+  warp:
+    usage: /warp <warp name>

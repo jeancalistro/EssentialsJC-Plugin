@@ -3,30 +3,31 @@ package com.jeancalistro.essentials;
 import com.jeancalistro.essentials.commands.CommandFix;
 import com.jeancalistro.essentials.commands.CommandPing;
 import com.jeancalistro.essentials.commands.warp.CommandSetWarp;
-import com.jeancalistro.essentials.utils.FileUtils;
+import com.jeancalistro.essentials.commands.warp.CommandWarp;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.File;
 
-public final class Essential extends JavaPlugin {
+public final class EssentialJC extends JavaPlugin {
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         //make a directory and file if not exists
-        if(!FileUtils.exists(Paths.get("plugins/EssentialsJC"))) {
-            try {
-                FileUtils.createDirectory("plugins/", "EssentialsJC");
-                FileUtils.createDirectory("plugins/EssentialsJC", "warps");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        File dataFolder = getDataFolder();
+        if(!dataFolder.exists()) {
+            dataFolder.mkdir();
+        }
+        //warps directory
+        File warpsFolder = new File(String.format("%s/warps", dataFolder.getPath()));
+        if(!warpsFolder.exists()) {
+            warpsFolder.mkdir();
         }
         //init commands
         this.getCommand("fix").setExecutor(new CommandFix());
         this.getCommand("ping").setExecutor(new CommandPing());
         this.getCommand("setwarp").setExecutor(new CommandSetWarp());
+        this.getCommand("warp").setExecutor(new CommandWarp());
     }
 
     @Override
