@@ -15,6 +15,6 @@ public class CommandPing implements CommandExecutor {
             player.sendMessage(String.format("Ping: %s ms", String.valueOf(player.getPing())));
         }
 
-        return false;
+        return true;
     }
 }

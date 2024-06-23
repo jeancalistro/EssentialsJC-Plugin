@@ -27,8 +27,11 @@ public class CommandFix implements CommandExecutor {
 
                 player.sendMessage("Item Consertado");
             }
+            else {
+                player.sendMessage("Coloque o item à ser consertado na mão");
+            }
         }
 
-        return false;
+        return true;
     }
 }

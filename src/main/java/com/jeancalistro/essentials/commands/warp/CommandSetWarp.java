@@ -23,7 +23,8 @@ public class CommandSetWarp implements CommandExecutor {
                 else {
                     player.sendMessage(String.format("Não foi possível criar a warp %s", warpName));
                 }
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
