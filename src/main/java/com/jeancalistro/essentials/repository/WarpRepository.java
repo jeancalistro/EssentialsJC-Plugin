@@ -1,10 +1,11 @@
 package com.jeancalistro.essentials.repository;
 
 import com.jeancalistro.essentials.Warp;
-import com.jeancalistro.essentials.utils.FileUtil;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,60 +13,66 @@ import java.util.Map;
 
 public class WarpRepository {
 
-    public static Map<String, Object> read(String warpName) {
-        String warpFileName = FileUtil.addExtension(warpName, "yaml");
-        try {
-            return FileUtil.readData(new File(String.format("plugins/EssentialsJC/warps/%s", warpFileName)));
-        }
-        catch (FileNotFoundException e) {
-            return null;
-        }
+    private Connection dbConnection;
+
+    public WarpRepository(Connection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 
-    public static List<String> list(boolean removeExtension) {
-        List<String> warpNameList = new ArrayList<>();
-        try {
-            for(File file : FileUtil.listFiles(new File("plugins/EssentialsJC/warps/"))) {
-                if(removeExtension) {
-                    String filename = FileUtil.removeExtension(file.getName(), "yaml");
-                    warpNameList.add(filename);
-                }
-                else {
-                    warpNameList.add(file.getName());
-                }
-            }
-            return warpNameList;
+    public Map<String, Object> get(String warpname) throws SQLException {
+        PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT * FROM Warp WHERE name = ?");
+        preparedStatement.setString(1, warpname);
+
+        ResultSet resultset = preparedStatement.executeQuery();
+        Map<String, Object> result = new HashMap<>();
+        if(resultset.next()) {
+            result.put("name", resultset.getString("name"));
+            result.put("world", resultset.getString("world"));
+            result.put("x", resultset.getDouble("x"));
+            result.put("y", resultset.getDouble("y"));
+            result.put("z", resultset.getDouble("z"));
         }
-        catch (FileNotFoundException e) {
-            return null;
-        }
+
+        preparedStatement.close();
+        return result;
     }
 
-    public static boolean create(Warp warp) throws IOException {
-        String warpFileName = FileUtil.addExtension(warp.getName(), "yaml");
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("world", warp.getWorld().getName());
-        attrs.put("name", warp.getName());
-        attrs.put("x", warp.getX());
-        attrs.put("y", warp.getY());
-        attrs.put("z", warp.getZ());
-        try {
-            FileUtil.saveData(new File(String.format("plugins/EssentialsJC/warps/%s", warpFileName)), attrs);
+    public List<Map<String, Object>> getAll() throws SQLException {
+        PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT * FROM Warp");
+
+        ResultSet resultset = preparedStatement.executeQuery();
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        while(resultset.next()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("name", resultset.getString("name"));
+            data.put("world", resultset.getString("world"));
+            data.put("x", resultset.getDouble("x"));
+            data.put("y", resultset.getDouble("y"));
+            data.put("z", resultset.getDouble("z"));
+            result.add(data);
         }
-        catch (IOException e) {
-            return false;
-        }
-        return true;
+
+        preparedStatement.close();
+        return result;
     }
 
-    public static boolean delete(String warpName) {
-        try {
-            String warpFileName = FileUtil.addExtension(warpName, "yaml");
-            FileUtil.deleteData(new File(String.format("plugins/EssentialsJC/warps/%s", warpFileName)));
-            return true;
-        }
-        catch (FileNotFoundException e) {
-            return false;
-        }
+    public void save(Warp warp) throws SQLException {
+        PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO Warp (name, world, x, y, z) VALUES (?, ?, ?, ?, ?)");
+        preparedStatement.setString(1, warp.getName());
+        preparedStatement.setString(2, warp.getWorld());
+        preparedStatement.setDouble(3, warp.getX());
+        preparedStatement.setDouble(4, warp.getY());
+        preparedStatement.setDouble(5, warp.getZ());
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
+
+    public void delete(String warpname) throws SQLException {
+        PreparedStatement preparedStatement = dbConnection.prepareStatement("DELETE FROM Warp WHERE name = ?");
+        preparedStatement.setString(1, warpname);
+        preparedStatement.execute();
+        preparedStatement.close();
+    }
+
 }

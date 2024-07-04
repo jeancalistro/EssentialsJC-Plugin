@@ -1,6 +1,6 @@
 package com.jeancalistro.essentials.commands.warp;
 
-import com.jeancalistro.essentials.Warp;
+import com.jeancalistro.essentials.service.WarpService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,6 +8,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandDelWarp implements CommandExecutor {
+    private WarpService warpService;
+
+    public CommandDelWarp(WarpService warpService) {
+        this.warpService = warpService;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -15,11 +20,11 @@ public class CommandDelWarp implements CommandExecutor {
             Player player = (Player) sender;
             if(args.length == 1) {
                 String warpName = args[0];
-                if(Warp.delWarp(warpName)) {
-                    player.sendMessage(String.format("Warp %s foi excluída!", warpName));
+                if(warpService.delete(warpName)) {
+                    player.sendMessage("Warp excluida!");
                 }
                 else {
-                    player.sendMessage(String.format("Não foi possível excluir a warp %s!", warpName));
+                    player.sendMessage("Não foi possível excluir a Warp!");
                 }
                 return true;
             }
